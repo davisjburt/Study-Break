@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Canvas Break",
+  "version": "1.0",
+  "description": "Study break mini-games integrated into Canvas LMS",
+  "permissions": ["storage", "alarms"],
+  "host_permissions": ["https://*.instructure.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.instructure.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
+}

@@ -1,0 +1,65 @@
+#cb-dock {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  width: 340px;
+  background: #2d3b45; /* Canvas's dark nav color */
+  color: white;
+  border-radius: 8px 8px 0 0;
+  z-index: 99999;
+  font-family: sans-serif;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+}
+
+#cb-header {
+  padding: 8px 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  background: #1b2d3a;
+  border-radius: 8px 8px 0 0;
+}
+
+#cb-body {
+  padding: 12px;
+}
+
+#cb-game-select button {
+  margin: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #e66000; /* Canvas orange */
+  color: white;
+  cursor: pointer;
+}
+
+.wrd-tile {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  margin: 2px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.green {
+  background: #538d4e;
+}
+.yellow {
+  background: #b59f3b;
+}
+.gray {
+  background: #3a3a3c;
+}
+
+#cb-break-timer {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #aaa;
+  text-align: right;
+}
