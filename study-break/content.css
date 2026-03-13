@@ -1,5 +1,7 @@
 :root {
   --sb-accent: #4a9eff;
+  --sb-panel-width: 300px;
+  --sb-panel-expanded-width: 520px;
 }
 
 /* Nav buttons */
@@ -62,26 +64,35 @@
   position: fixed;
   top: 0;
   left: 68px;
-  width: 300px;
+  width: var(--sb-panel-width);
   height: 100vh;
   background: #1a1e2e;
   color: white;
-  z-index: 9998;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%) !important;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
   border-right: 1px solid rgba(74, 158, 255, 0.15);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   visibility: hidden;
   overflow: hidden;
-  will-change: transform;
+  will-change: transform, width;
 }
+
 #sb-panel.sb-open {
   transform: translateX(0) !important;
   visibility: visible;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#sb-panel.sb-expanded {
+  width: var(--sb-panel-expanded-width);
 }
 
 /* Header */
@@ -270,6 +281,11 @@
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+#sb-game-area.sb-game-visible {
+  opacity: 1;
 }
 
 /* Footer */
@@ -360,7 +376,6 @@
   gap: 8px;
   width: 100%;
 }
-
 #wrd-msg {
   min-height: 22px;
   font-size: 12px;
@@ -378,7 +393,6 @@
 #wrd-msg.wrd-msg-show {
   opacity: 1;
 }
-
 #wrd-grid {
   display: flex;
   flex-direction: column;
@@ -388,16 +402,15 @@
   display: flex;
   gap: 4px;
 }
-
 .wrd-tile {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   color: white;
   text-transform: uppercase;
@@ -408,8 +421,6 @@
 .wrd-filled {
   border-color: rgba(255, 255, 255, 0.5) !important;
 }
-
-/* Flip animation — uses scaleY not rotateX to avoid panel !important conflict */
 .wrd-flip {
   animation: wrdFlip 0.3s ease forwards;
 }
@@ -424,7 +435,6 @@
     transform: scaleY(1);
   }
 }
-
 .wrd-correct {
   background: #538d4e;
   border-color: #538d4e !important;
@@ -437,7 +447,6 @@
   background: #3a3a3c;
   border-color: #3a3a3c !important;
 }
-
 #wrd-keyboard {
   display: flex;
   flex-direction: column;
@@ -445,19 +454,18 @@
 }
 .wrd-key-row {
   display: flex;
-  gap: 3px;
+  gap: 4px;
   justify-content: center;
 }
-
 .wrd-key {
-  min-width: 26px;
-  height: 34px;
+  min-width: 30px;
+  height: 40px;
   padding: 0 4px;
   background: #374151;
   border: none;
   border-radius: 5px;
   color: white;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -469,8 +477,8 @@
   transform: scale(0.92);
 }
 .wrd-key-wide {
-  min-width: 44px;
-  font-size: 9px;
+  min-width: 52px;
+  font-size: 10px;
 }
 .wrd-key-correct {
   background: #538d4e !important;
@@ -484,7 +492,6 @@
   background: #1f2937 !important;
   color: #6b7280;
 }
-
 #wrd-stats-box {
   width: 100%;
 }
@@ -506,8 +513,8 @@
   background: #111827;
   border-radius: 8px;
   padding: 10px;
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.8;
   color: #4b5563;
   letter-spacing: 0.3px;
 }
@@ -585,17 +592,17 @@
 }
 #msw-grid {
   display: grid;
-  grid-template-columns: repeat(8, 30px);
-  grid-template-rows: repeat(8, 30px);
+  grid-template-columns: repeat(8, 34px);
+  grid-template-rows: repeat(8, 34px);
   gap: 2px;
 }
 .msw-cell {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   border-radius: 5px;
   cursor: pointer;

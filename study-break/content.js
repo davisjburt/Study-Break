@@ -6,16 +6,6 @@ function getNavWidth() {
   return nav ? Math.round(nav.getBoundingClientRect().width) : 68;
 }
 
-function pushContent(open) {
-  const main =
-    document.querySelector(".ic-app-main") ||
-    document.querySelector("#main") ||
-    document.querySelector(".ic-Layout-contentMain");
-  if (!main) return;
-  main.style.transition = "margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
-  main.style.marginLeft = open ? "300px" : "";
-}
-
 function closeDrawer() {
   const closeBtn =
     document.querySelector(
@@ -35,6 +25,7 @@ function injectDesktopButton() {
     document.querySelector(".ic-app-header__menu-list") ||
     document.querySelector("#menu ul");
   if (!nav) return false;
+
   const li = document.createElement("li");
   li.className = "menu-item ic-app-header__menu-list-item";
   li.innerHTML = `
@@ -64,6 +55,7 @@ function injectDrawerButton() {
     document.querySelector(".ic-NavToggle-animates-list");
   if (!drawer) return false;
   if (drawer.querySelector("#sb-drawer-btn")) return true;
+
   const li = document.createElement("li");
   li.id = "sb-drawer-li";
   li.innerHTML = `
@@ -95,6 +87,7 @@ function injectButton() {
 
 function injectPanel() {
   if (document.getElementById("sb-panel")) return;
+
   const panel = document.createElement("div");
   panel.id = "sb-panel";
   panel.innerHTML = `
@@ -163,6 +156,7 @@ function injectPanel() {
       <button id="sb-start-timer">Start Pomodoro</button>
     </div>
   `;
+
   document.body.appendChild(panel);
 
   // Settings toggle
@@ -202,21 +196,23 @@ function injectPanel() {
   // Color buttons
   document.querySelectorAll(".sb-color-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const color = btn.dataset.color;
       document
         .querySelectorAll(".sb-color-btn")
         .forEach((b) => b.classList.remove("sb-color-active"));
       btn.classList.add("sb-color-active");
-      document.documentElement.style.setProperty("--sb-accent", color);
+      document.documentElement.style.setProperty(
+        "--sb-accent",
+        btn.dataset.color,
+      );
       chrome.storage.local.get(["sbSettings"], (data) => {
         chrome.storage.local.set({
-          sbSettings: { ...(data.sbSettings || {}), accent: color },
+          sbSettings: { ...(data.sbSettings || {}), accent: btn.dataset.color },
         });
       });
     });
   });
 
-  // Load saved accent
+  // Load saved settings
   chrome.storage.local.get(["sbSettings"], (data) => {
     if (data.sbSettings?.accent) {
       document.documentElement.style.setProperty(
@@ -230,15 +226,22 @@ function injectPanel() {
         );
       });
     }
+    if (data.sbSettings?.duration) {
+      pomoDuration = data.sbSettings.duration;
+    }
   });
 
+  // Close button
   document
     .getElementById("sb-close")
     .addEventListener("click", () => togglePanel());
+
+  // Pomodoro
   document
     .getElementById("sb-start-timer")
     .addEventListener("click", () => startTimer(pomoDuration));
 
+  // Game buttons
   document.querySelectorAll(".sb-game-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.classList.contains("active")) return;
@@ -246,9 +249,15 @@ function injectPanel() {
         .querySelectorAll(".sb-game-btn")
         .forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
+
       const gameArea = document.getElementById("sb-game-area");
       if (gameArea._cleanup) gameArea._cleanup();
+
+      // Expand panel then fade game in
+      document.getElementById("sb-panel").classList.add("sb-expanded");
+      gameArea.classList.remove("sb-game-visible");
       loadGame(btn.dataset.game);
+      setTimeout(() => gameArea.classList.add("sb-game-visible"), 200);
     });
   });
 }
@@ -256,19 +265,30 @@ function injectPanel() {
 function togglePanel(forceOpen = false) {
   const panel = document.getElementById("sb-panel");
   panel.style.left = getNavWidth() + "px";
+
   const isOpen = panel.classList.contains("sb-open");
   const willOpen = forceOpen ? true : !isOpen;
+
   if (willOpen) {
     panel.style.visibility = "visible";
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         panel.classList.add("sb-open");
-        pushContent(true);
       });
     });
   } else {
     panel.classList.remove("sb-open");
-    pushContent(false);
+    panel.classList.remove("sb-expanded");
+
+    // Reset game state on close
+    document
+      .querySelectorAll(".sb-game-btn")
+      .forEach((b) => b.classList.remove("active"));
+    const gameArea = document.getElementById("sb-game-area");
+    if (gameArea._cleanup) gameArea._cleanup();
+    gameArea.classList.remove("sb-game-visible");
+    gameArea.innerHTML = "";
+
     setTimeout(() => {
       if (!panel.classList.contains("sb-open"))
         panel.style.visibility = "hidden";
@@ -298,8 +318,10 @@ function startTimer(durationMin = 25) {
     document.getElementById("sb-start-timer").textContent = "Start Pomodoro";
     return;
   }
+
   timerSeconds = durationMin * 60;
   document.getElementById("sb-start-timer").textContent = "Stop";
+
   timerInterval = setInterval(() => {
     timerSeconds--;
     const m = Math.floor(timerSeconds / 60)
@@ -308,6 +330,7 @@ function startTimer(durationMin = 25) {
     const s = (timerSeconds % 60).toString().padStart(2, "0");
     document.getElementById("sb-timer-label").textContent =
       `⏱ ${m}:${s} remaining`;
+
     if (timerSeconds <= 0) {
       clearInterval(timerInterval);
       timerInterval = null;
