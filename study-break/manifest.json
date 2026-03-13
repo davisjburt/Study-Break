@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Canvas Break",
+  "name": "Study Break",
   "version": "1.0",
   "description": "Study break mini-games integrated into Canvas LMS",
   "permissions": ["storage", "alarms"],
@@ -11,7 +11,16 @@
   "content_scripts": [
     {
       "matches": ["https://*.instructure.com/*"],
-      "js": ["content.js"],
+      "exclude_matches": [
+        "https://*.instructure.com/courses/*/quizzes/*/take*"
+      ],
+      "js": [
+        "games/words.js",
+        "games/wordle.js",
+        "games/typing.js",
+        "games/minesweeper.js",
+        "content.js"
+      ],
       "css": ["content.css"]
     }
   ],
